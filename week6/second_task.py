@@ -9,24 +9,32 @@ bot = telebot.TeleBot(token)
 @bot.message_handler(commands=['add'])
 def add_name(message):
     bot.send_message(chat_id=message.chat.id,
-                     text='Отправте координаты места')
+                     text='Отправте геопозицию места')
     bot.register_next_step_handler(message, add_finish)
 
 
 def add_finish(message):
-    place = message.location
-    with open(f'data/{message.chat.id}.txt', 'a') as f:
-        f.write(str(place.longitude) + ' ')
-        f.write(str(place.latitude) + '\n')
-    bot.send_message(chat_id=message.chat.id,
-                     text='Локация добавлена успешно')
+    try:
+        place = message.location
+        with open(f'data/{message.chat.id}.txt', 'a') as f:
+            f.write(str(place.longitude) + ' ')
+            f.write(str(place.latitude) + '\n')
+        bot.send_message(chat_id=message.chat.id,
+                         text='Локация добавлена успешно')
+    except Exception:
+        bot.send_message(chat_id=message.chat.id,
+                         text='Геопозиия отправлена не верно.')
 
 
 @bot.message_handler(commands=['reset'])
 def reset(message):
-    os.remove(f'data/{message.chat.id}.txt')
-    bot.send_message(chat_id=message.chat.id,
-                     text='Список локаций очищен')
+    try:
+        os.remove(f'data/{message.chat.id}.txt')
+        bot.send_message(chat_id=message.chat.id,
+                         text='Список локаций очищен')
+    except Exception:
+        bot.send_message(chat_id=message.chat.id,
+                         text='Список локаций очищен')
 
 
 @bot.message_handler(commands=['list'])
